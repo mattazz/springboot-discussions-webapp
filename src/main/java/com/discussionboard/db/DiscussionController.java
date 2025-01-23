@@ -1,10 +1,12 @@
 package com.discussionboard.db;
 
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,10 +31,56 @@ public class DiscussionController {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private PostsRepository postsRepository;
+
 //    Mappings for the dashboard and new-discussion pages API
     @GetMapping("/new-discussion")
     public String newDiscussionForm() {
         return "newDiscussion";
+    }
+
+    @GetMapping("/discussion/{id}")
+    public ModelAndView viewDiscussion(@PathVariable("id") String id) {
+        ModelAndView modelAndView = new ModelAndView("discussion");
+        Optional<Discussion> discussion = discussionRepository.findById(id);
+        if (discussion.isPresent()) {
+            modelAndView.addObject("discussion", discussion.get());
+            List<Post> posts = postsRepository.findByDiscussionId(id);
+            modelAndView.addObject("comments", posts);
+        } else {
+            modelAndView.setViewName("redirect:/dashboard");
+            modelAndView.addObject("error", "Discussion not found");
+        }
+        return modelAndView;
+    }
+
+    @GetMapping("/new-post")
+    public String newPostForm() {
+        return "newPost";
+    }
+
+    @PostMapping("/new-post")
+    public ModelAndView createPost(@RequestParam("content") String content,
+                                   @RequestParam("discussionId") String discussionId,
+                                   HttpServletRequest request) {
+        String username = getUsernameFromSession(request);
+        logger.info("Received new post request: content={}, discussionId={}, username={}", content, discussionId, username);
+        ModelAndView modelAndView = new ModelAndView("newPost");
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            Post post = new Post();
+            post.setContent(content);
+            post.setAuthor(username); // Link the author to the username
+            post.setDiscussionId(discussionId); // Set the discussionId
+            postsRepository.save(post);
+            logger.info("Post saved successfully: {}", post);
+            modelAndView.setViewName("redirect:/discussion/" + discussionId);
+        } else {
+            logger.error("User not found: {}", username);
+            modelAndView.addObject("error", "User not found");
+        }
+        return modelAndView;
     }
 
     @PostMapping("/new-discussion")

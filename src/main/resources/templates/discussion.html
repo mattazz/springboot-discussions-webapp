@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Discussion Details</title>
 </head>
 
 <body>
@@ -35,21 +35,33 @@
 
 <main class="container mt-5">
     <div class="row">
-        <div class="col-md-9">
-            <h1>View latest discussions</h1>
-            <p>Welcome to your dashboard. Here you can find an overview of your activities.</p>
-            <ul>
-                <li th:each="discussion : ${discussions}" class="card border-black border-4 p-4 m-2">
-                    <h2><a th:href="@{'/discussion/' + ${discussion.id}}" th:text="${discussion.title} + ' by ' + ${discussion.author}"></a></h2>
-                    <p><span th:text="${#temporals.format(discussion.date, 'yyyy-MM-dd HH:mm')}"></span></p>
-                    <p th:text="${discussion.content}"></p>
-<!--                    <p><strong>Author:</strong> <span th:text="${discussion.author}"></span></p>-->
-                </li>
-            </ul>
+        <div class="card border-4 border-success rounded">
+            <h1 th:text="${discussion.title}"></h1>
+            <p><strong>Author:</strong> <span th:text="${discussion.author}"></span></p>
+            <p><strong>Date:</strong> <span th:text="${#temporals.format(discussion.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p th:text="${discussion.content}"></p>
         </div>
     </div>
     <div class="row">
-        <button class="btn btn-success" onclick="location.href='/new-discussion'">Create new discussion</button>
+        <h2>Comments</h2>
+        <ul>
+            <li th:each="comment : ${comments}" class="card border-black border-4 p-4 m-2">
+                <p th:text="${comment.content}"></p>
+                <p><strong>Author:</strong> <span th:text="${comment.author}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+            </li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <form action="/new-post" method="post">
+            <div class="mb-3">
+                <label for="content" class="form-label">Post new content</label>
+                <textarea class="form-control" id="content" name="content" required></textarea>
+            </div>
+            <input type="hidden" name="discussionId" th:value="${discussion.id}">
+            <button type="submit" class="btn btn-success">Create new Post</button>
+        </form>
     </div>
 </main>
 
