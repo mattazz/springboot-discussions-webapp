@@ -3,6 +3,7 @@ package com.discussionboard.db;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+// Model for MongoDB session collection that is used to store session information
 @Document
 public class Session {
 

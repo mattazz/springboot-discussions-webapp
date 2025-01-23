@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+// Model for MongoDB discussion collection
 @Data
 @Document(collection="discussion")
 public class Discussion {

@@ -20,6 +20,7 @@ public class HomeController {
             return "index";
         }
 
+//     Lists all discussions on the dashboard
     @GetMapping("/dashboard")
     public String viewDashboard(Model model) {
         List<Discussion> discussions = discussionRepository.findAll();

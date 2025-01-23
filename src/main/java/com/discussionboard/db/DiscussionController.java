@@ -21,6 +21,7 @@ public class DiscussionController {
 
     private static final Logger logger = LoggerFactory.getLogger(DiscussionController.class);
 
+//    @Autowired annotation to inject the DiscussionRepository, UserRepository, and SessionRepository
     @Autowired
     private DiscussionRepository discussionRepository;
 
@@ -30,6 +31,7 @@ public class DiscussionController {
     @Autowired
     private SessionRepository sessionRepository;
 
+//    Mappings for the dashboard and new-discussion pages API
     @GetMapping("/new-discussion")
     public String newDiscussionForm() {
         return "newDiscussion";
@@ -57,7 +59,7 @@ public class DiscussionController {
         }
         return modelAndView;
     }
-
+//    Function to get the username from the session, used to link the author to the username
     private String getUsernameFromSession(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
